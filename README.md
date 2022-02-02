@@ -1,5 +1,6 @@
 # nosql2h21-meshrooom
 
-### Сценарий
+## Use cases
 
+### Макет
 ![Сценарий](usecases.png)
