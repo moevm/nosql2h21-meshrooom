@@ -4,6 +4,7 @@ from flask_pymongo import PyMongo
 import json
 from bson.objectid import ObjectId
 import re
+import random
 
 
 application = Flask(__name__)
@@ -80,8 +81,8 @@ def create_project():
     x_projects = projects_col.insert_one({
         "name": name,
         "description": description,
-        "images_count": 5,
-        "metadata_size": 300,
+        "images_count": random.randint(50, 100),
+        "metadata_size": len(metadata),
         "metadata_id": x_metadata.inserted_id,
     })
 
