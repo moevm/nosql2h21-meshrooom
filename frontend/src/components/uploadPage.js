@@ -4,6 +4,20 @@ import { Link } from 'react-router-dom'
 import axios from 'axios';
 
 export function uploadPage(){
+    
+    function createProject(){
+        const project = {
+            name: this.state.name,
+            description: this.state.description
+          };
+
+      axios.post(`http://0.0.0.0/projects/`, {project})
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
+      })
+
+    }
 
     return(
             <html lang="en">

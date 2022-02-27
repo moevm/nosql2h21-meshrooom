@@ -3,12 +3,12 @@ import { Link } from 'react-router-dom'
 import axios from 'axios';
 
 export function projects(){
-    
+
     function search(){
       axios.get(`http://0.0.0.0/projects`)
       .then(res => {
         const projects = res.data;
-        this.setState({ projects });
+          setState({ projects });
       })
     }
 
