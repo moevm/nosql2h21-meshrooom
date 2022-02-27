@@ -3,6 +3,18 @@ import { Link } from 'react-router-dom'
 import axios from 'axios';
 
 export function searchPage(){
+    const project = {
+        name: this.state.name,
+        description: this.state.description
+      };
+
+    function searchOne(context){
+      axios.get(`http://0.0.0.0/projects/${context}`)
+      .then(res => {
+        const project = res.data;
+        this.setState({ project });
+      })
+    }
 
     return(
         <html lang="en">
@@ -42,6 +54,10 @@ export function searchPage(){
                 <div class="search-btn-group">
                     <button class="button" onClick={searchOne()}>Найти проект</button>
                     <Button variant='success' as={Link} to={`/searchPage`}>Поиск</Button>
+                    <ul>
+                        { this.state.project.map(project => <li>{project.name}</li>)}
+                        { this.state.project.map(project => <li>{project.description}</li>)}
+                    </ul>
                 </div>
                 </header>
                 <div class="search-container2">
@@ -82,7 +98,7 @@ export function searchPage(){
                     <span><span>56</span></span>
                     <span>0.3MB</span>
                     <span>Редактировать</span>
-                    <span>Удалить</span>
+                    <button className="deleteButton" onClick={deleteProject}>Удалить</button>
                     <span>Скачать</span>
                 </div>
                 <h1 class="search-text24">
