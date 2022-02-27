@@ -45,7 +45,11 @@ export function searchPage(){
     }
 
     function editProject(context){
-        axios.post(`http://0.0.0.0/projects/${context}`)
+        const project = {
+            name: this.state.name
+          };
+
+        axios.post(`http://0.0.0.0/projects/${context}/edit`, project)
         .then(res => {
             console.log(res.data);
         })
