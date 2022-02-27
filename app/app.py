@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
 import json
 from bson.objectid import ObjectId
-import re
 import random
 
 
@@ -19,16 +18,7 @@ db = mongo.db
 def get_projects():
     projects = db.projects.find()
 
-    data = []
-    for project in projects:
-        item = {
-            'id': str(project['_id']),
-            'name': project['name'],
-            'description': project['description'],
-            'images_count': project['images_count'],
-            'metadata_size': project['metadata_size'],
-        }
-        data.append(item)
+    data = create_response_collection(projects)
 
     return jsonify(data=data)
 
@@ -131,16 +121,7 @@ def search_projects():
         ],
     })
 
-    data = []
-    for project in projects:
-        item = {
-            'id': str(project['_id']),
-            'name': project['name'],
-            'description': project['description'],
-            'images_count': project['images_count'],
-            'metadata_size': project['metadata_size'],
-        }
-        data.append(item)
+    data = create_response_collection(projects)
 
     return jsonify(data=data)
 
@@ -159,6 +140,21 @@ def search_metadata():
                 data.append({k: str(v)})
 
     return jsonify(data=data)
+
+
+def create_response_collection(projects):
+    data = []
+    for project in projects:
+        item = {
+            'id': str(project['_id']),
+            'name': project['name'],
+            'description': project['description'],
+            'images_count': project['images_count'],
+            'metadata_size': project['metadata_size'],
+        }
+        data.append(item)
+
+    return data
 
 
 if __name__ == "__main__":
