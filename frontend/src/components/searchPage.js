@@ -15,6 +15,28 @@ export function searchPage(){
       })
     }
 
+    function searchProject(){
+        const project = {
+            name: this.state.name
+          };
+      
+        axios.post(`http://0.0.0.0/projects/search/`, {project})
+        .then(res => {
+            project = res.data;
+        })
+      }
+
+    function searchMeta(){
+        const metadata = {
+            meta: this.state.meta
+          };
+      
+        axios.post(`http://0.0.0.0/metadata/search/`, {metadata})
+        .then(res => {
+            metadata = res.data;
+        })
+      }
+
     function deleteProject(context){
         axios.delete(`http://0.0.0.0/projects/${context}`)
         .then(res => {
@@ -75,7 +97,9 @@ export function searchPage(){
                 </header>
                 <div class="search-container2">
                 <h1>
-                    <span>Поиск по проектам</span>
+                    <span>Найти проект</span>
+                    <input type="text" placeholder="Название проекта" class="input" name="name"/>
+                        <button class="button" onClick={searchProject()}>Найти проект</button>
                     <br />
                     <span></span>
                 </h1>
@@ -110,12 +134,13 @@ export function searchPage(){
                     </span>
                     <span><span>56</span></span>
                     <span>0.3MB</span>
-                    <button className="editButton" onClick={editProject}>Редактировать</button>
-                    <button className="deleteButton" onClick={deleteProject}>Удалить</button>
+                    <button className="editButton" onClick={editProject()}>Редактировать</button>
+                    <button className="deleteButton" onClick={deleteProject()}>Удалить</button>
                     <span>Скачать</span>
                 </div>
                 <h1 class="search-text24">
-                    <span>Поиск по метаданным</span>
+                <input type="text" placeholder="Название проекта" class="input" name="meta"/>
+                        <button class="button" onClick={searchMeta()}>Найти проект</button>
                     <br />
                     <span></span>
                 </h1>
