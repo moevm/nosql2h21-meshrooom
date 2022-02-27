@@ -11,9 +11,22 @@ export function searchPage(){
     function searchOne(context){
       axios.get(`http://0.0.0.0/projects/${context}`)
       .then(res => {
-        const project = res.data;
         this.setState({ project });
       })
+    }
+
+    function deleteProject(context){
+        axios.delete(`http://0.0.0.0/projects/${context}`)
+        .then(res => {
+            console.log(res.data);
+        })
+    }
+
+    function editProject(context){
+        axios.post(`http://0.0.0.0/projects/${context}`)
+        .then(res => {
+            console.log(res.data);
+        })
     }
 
     return(
@@ -97,7 +110,7 @@ export function searchPage(){
                     </span>
                     <span><span>56</span></span>
                     <span>0.3MB</span>
-                    <span>Редактировать</span>
+                    <button className="editButton" onClick={editProject}>Редактировать</button>
                     <button className="deleteButton" onClick={deleteProject}>Удалить</button>
                     <span>Скачать</span>
                 </div>
