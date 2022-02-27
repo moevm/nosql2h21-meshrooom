@@ -51,7 +51,8 @@ export function projects(){
                     </div>
                   </div>
                   <div className="metadata-btn-group">
-                    <Button variant='success' as={Link} to={`/searchPage`} onClick={search()}>Поиск</Button>
+                    <button className="button" onClick={search()}>Показать все проекты</button>
+                    <Button variant='success' as={Link} to={`/searchPage`}>Поиск</Button>
                       <ul>
                         { this.state.projects.map(projects => <li>{projects.name}</li>)}
                       </ul>
