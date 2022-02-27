@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
 import json
 from bson.objectid import ObjectId
+import re
 
 
 application = Flask(__name__)
@@ -112,6 +113,23 @@ def search_projects():
         data.append(item)
 
     return jsonify(data=data)
+
+
+@application.route('/metadata/search', methods=['POST'])
+def search_metadata():
+    query = request.form['query']
+
+    metadatas = db.metadata.find()
+
+    data = []
+
+    for metadata in metadatas:
+        for k, v in metadata.items():
+            if query in str(v) and not isinstance(v, ObjectId):
+                data.append({k: str(v)})
+
+    return jsonify(data=data)
+
 
 if __name__ == "__main__":
     ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)
