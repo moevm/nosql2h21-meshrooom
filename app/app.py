@@ -89,6 +89,30 @@ def create_project():
     )
 
 
+@application.route('/projects/search', methods=['POST'])
+def search_projects():
+    query = request.form['query']
+
+    projects = db.projects.find({
+        '$or': [
+            {'name': {'$regex': '.*' + query + '.*'}},
+            {'description': {'$regex': '.*' + query + '.*'}},
+        ],
+    })
+
+    data = []
+    for project in projects:
+        item = {
+            'id': str(project['_id']),
+            'name': project['name'],
+            'description': project['description'],
+            'images_count': project['images_count'],
+            'metadata_size': project['metadata_size'],
+        }
+        data.append(item)
+
+    return jsonify(data=data)
+
 if __name__ == "__main__":
     ENVIRONMENT_DEBUG = os.environ.get("APP_DEBUG", True)
     ENVIRONMENT_PORT = os.environ.get("APP_PORT", 5000)
