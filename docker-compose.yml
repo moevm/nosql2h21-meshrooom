@@ -22,6 +22,7 @@ services:
     depends_on:
       - mongodb
     networks:
+      - frontend
       - backend
 
   mongodb:
@@ -40,8 +41,23 @@ services:
     networks:
       - backend
 
+  nginx:
+    image: "nginx:stable-alpine"
+    volumes:
+      - ./app:/var/www
+    ports:
+      - 80:80
+      - 80:5000
+    depends_on:
+      - flask
+    networks:
+      - frontend
+      - backend
+
 networks:
   backend:
+    driver: bridge
+  frontend:
     driver: bridge
 
 volumes:
