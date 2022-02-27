@@ -91,6 +91,35 @@ def create_project():
     )
 
 
+@application.route('/projects/<id>/edit', methods=['POST'])
+def edit_project(id):
+    name = request.form['name']
+    description = request.form['description']
+    metadata = request.form['metadata']
+
+    projects_col = db['projects']
+    metadata_col = db['metadata']
+
+    project = db.projects.find_one({'_id': ObjectId(id)})
+
+    db.metadata.delete_one({'_id': project['metadata_id']})
+    db.projects.delete_one({'_id': project['_id']})
+
+    x_metadata = metadata_col.insert_one(json.loads(metadata))
+    x_projects = projects_col.insert_one({
+        "name": name,
+        "description": description,
+        "images_count": 5,
+        "metadata_size": 300,
+        "metadata_id": x_metadata.inserted_id,
+    })
+
+    return jsonify(
+        id=str(x_projects.inserted_id)
+    )
+
+
+
 @application.route('/projects/search', methods=['POST'])
 def search_projects():
     query = request.form['query']
