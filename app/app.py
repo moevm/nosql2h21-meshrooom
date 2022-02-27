@@ -20,7 +20,10 @@ def get_projects():
 
     data = create_response_collection(projects)
 
-    return jsonify(data=data)
+    response = jsonify(data=data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 @application.route('/projects/<id>', methods=['GET'])
@@ -42,7 +45,10 @@ def get_project(id):
         'metadata': metadata,
     }
 
-    return jsonify(item)
+    response = jsonify(item)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 @application.route('/projects/<id>', methods=['DELETE'])
@@ -55,7 +61,10 @@ def delete_project(id):
     db.metadata.delete_one({'_id': project['metadata_id']})
     db.projects.delete_one({'_id': project['_id']})
 
-    return jsonify(status=True)
+    response = jsonify(status=True)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 @application.route('/projects', methods=['POST'])
@@ -76,9 +85,10 @@ def create_project():
         "metadata_id": x_metadata.inserted_id,
     })
 
-    return jsonify(
-        id=str(x_projects.inserted_id)
-    )
+    response = jsonify(id=str(x_projects.inserted_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 @application.route('/projects/<id>/edit', methods=['POST'])
@@ -104,9 +114,10 @@ def edit_project(id):
         "metadata_id": x_metadata.inserted_id,
     })
 
-    return jsonify(
-        id=str(x_projects.inserted_id)
-    )
+    response = jsonify(id=str(x_projects.inserted_id))
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 
@@ -123,7 +134,10 @@ def search_projects():
 
     data = create_response_collection(projects)
 
-    return jsonify(data=data)
+    response = jsonify(data=data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 @application.route('/metadata/search', methods=['POST'])
@@ -139,7 +153,10 @@ def search_metadata():
             if query in str(v) and not isinstance(v, ObjectId):
                 data.append({k: str(v)})
 
-    return jsonify(data=data)
+    response = jsonify(data=data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
 
 
 def create_response_collection(projects):
