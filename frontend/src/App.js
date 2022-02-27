@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {BrowserRouter, Route, Switch} from 'react-router-dom';
 import {projects} from "./components/projects.js";
+import {searchPage} from "./components/searchPage.js";
+import {uploadPage} from "./components/uploadPage.js";
+import {exportPage} from "./components/exportPage.js";
 import {Container} from "react-bootstrap";
 
 class NotFound extends Component {
@@ -17,6 +20,9 @@ class App extends Component {
                 <BrowserRouter>
                     <Switch>
                         <Route path={"/"} name={"projects"} component={projects}/>
+                        <Route path={"/searchPage"} name={"searchPage"} component={searchPage}/>
+                        <Route path={"/uploadPage"} name={"uploadPage"} component={uploadPage}/>
+                        <Route path={"/exportPage"} name={"exportPage"} component={exportPage}/>
                         <Route component={NotFound}/>
                     </Switch>
                 </BrowserRouter>
