@@ -37,7 +37,6 @@ def get_project(id):
     metadata = db.metadata.find_one({'_id': project['metadata_id']})
     del metadata['_id']
 
-    data = []
     item = {
         'id': str(project['_id']),
         'name': project['name'],
@@ -46,9 +45,8 @@ def get_project(id):
         'metadata_size': project['metadata_size'],
         'metadata': metadata,
     }
-    data.append(item)
 
-    return jsonify(data)
+    return jsonify(item)
 
 
 @application.route('/projects', methods=['POST'])
