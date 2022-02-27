@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
 import json
 from bson.objectid import ObjectId
-import re
+import random
 
 
 application = Flask(__name__)
@@ -18,16 +18,7 @@ db = mongo.db
 def get_projects():
     projects = db.projects.find()
 
-    data = []
-    for project in projects:
-        item = {
-            'id': str(project['_id']),
-            'name': project['name'],
-            'description': project['description'],
-            'images_count': project['images_count'],
-            'metadata_size': project['metadata_size'],
-        }
-        data.append(item)
+    data = create_response_collection(projects)
 
     return jsonify(data=data)
 
@@ -80,14 +71,43 @@ def create_project():
     x_projects = projects_col.insert_one({
         "name": name,
         "description": description,
-        "images_count": 5,
-        "metadata_size": 300,
+        "images_count": random.randint(50, 100),
+        "metadata_size": len(metadata),
         "metadata_id": x_metadata.inserted_id,
     })
 
     return jsonify(
         id=str(x_projects.inserted_id)
     )
+
+
+@application.route('/projects/<id>/edit', methods=['POST'])
+def edit_project(id):
+    name = request.form['name']
+    description = request.form['description']
+    metadata = request.form['metadata']
+
+    projects_col = db['projects']
+    metadata_col = db['metadata']
+
+    project = db.projects.find_one({'_id': ObjectId(id)})
+
+    db.metadata.delete_one({'_id': project['metadata_id']})
+    db.projects.delete_one({'_id': project['_id']})
+
+    x_metadata = metadata_col.insert_one(json.loads(metadata))
+    x_projects = projects_col.insert_one({
+        "name": name,
+        "description": description,
+        "images_count": random.randint(50, 100),
+        "metadata_size": len(metadata),
+        "metadata_id": x_metadata.inserted_id,
+    })
+
+    return jsonify(
+        id=str(x_projects.inserted_id)
+    )
+
 
 
 @application.route('/projects/search', methods=['POST'])
@@ -101,16 +121,7 @@ def search_projects():
         ],
     })
 
-    data = []
-    for project in projects:
-        item = {
-            'id': str(project['_id']),
-            'name': project['name'],
-            'description': project['description'],
-            'images_count': project['images_count'],
-            'metadata_size': project['metadata_size'],
-        }
-        data.append(item)
+    data = create_response_collection(projects)
 
     return jsonify(data=data)
 
@@ -129,6 +140,21 @@ def search_metadata():
                 data.append({k: str(v)})
 
     return jsonify(data=data)
+
+
+def create_response_collection(projects):
+    data = []
+    for project in projects:
+        item = {
+            'id': str(project['_id']),
+            'name': project['name'],
+            'description': project['description'],
+            'images_count': project['images_count'],
+            'metadata_size': project['metadata_size'],
+        }
+        data.append(item)
+
+    return data
 
 
 if __name__ == "__main__":
