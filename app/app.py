@@ -1,6 +1,8 @@
 import os
 from flask import Flask, request, jsonify
 from flask_pymongo import PyMongo
+import json
+from bson.objectid import ObjectId
 
 
 application = Flask(__name__)
@@ -11,14 +13,14 @@ mongo = PyMongo(application)
 db = mongo.db
 
 
-@application.route('/projects')
-def projects():
+@application.route('/projects', methods=['GET'])
+def get_projects():
     projects = db.projects.find()
 
     data = []
     for project in projects:
         item = {
-            'id': project['id'],
+            'id': str(project['_id']),
             'name': project['name'],
             'description': project['description'],
             'images_count': project['images_count'],
@@ -26,9 +28,49 @@ def projects():
         }
         data.append(item)
 
+    return jsonify(data=data)
+
+
+@application.route('/projects/<id>', methods=['GET'])
+def get_project(id):
+    project = db.projects.find_one({'_id': ObjectId(id)})
+    metadata = db.metadata.find_one({'_id': project['metadata_id']})
+    del metadata['_id']
+
+    data = []
+    item = {
+        'id': str(project['_id']),
+        'name': project['name'],
+        'description': project['description'],
+        'images_count': project['images_count'],
+        'metadata_size': project['metadata_size'],
+        'metadata': metadata,
+    }
+    data.append(item)
+
+    return jsonify(data)
+
+
+@application.route('/projects', methods=['POST'])
+def create_project():
+    name = request.form['name']
+    description = request.form['description']
+    metadata = request.form['metadata']
+
+    projects_col = db['projects']
+    metadata_col = db['metadata']
+
+    x_metadata = metadata_col.insert_one(json.loads(metadata))
+    x_projects = projects_col.insert_one({
+        "name": name,
+        "description": description,
+        "images_count": 5,
+        "metadata_size": 300,
+        "metadata_id": x_metadata.inserted_id,
+    })
+
     return jsonify(
-        status=True,
-        data=data,
+        id=str(x_projects.inserted_id)
     )
 
 
