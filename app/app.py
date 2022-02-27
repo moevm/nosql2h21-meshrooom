@@ -34,6 +34,10 @@ def get_projects():
 @application.route('/projects/<id>', methods=['GET'])
 def get_project(id):
     project = db.projects.find_one({'_id': ObjectId(id)})
+
+    if not project:
+        return "not found", 404
+
     metadata = db.metadata.find_one({'_id': project['metadata_id']})
     del metadata['_id']
 
@@ -47,6 +51,19 @@ def get_project(id):
     }
 
     return jsonify(item)
+
+
+@application.route('/projects/<id>', methods=['DELETE'])
+def delete_project(id):
+    project = db.projects.find_one({'_id': ObjectId(id)})
+
+    if not project:
+        return "not found", 404
+
+    db.metadata.delete_one({'_id': project['metadata_id']})
+    db.projects.delete_one({'_id': project['_id']})
+
+    return jsonify(status=True)
 
 
 @application.route('/projects', methods=['POST'])
