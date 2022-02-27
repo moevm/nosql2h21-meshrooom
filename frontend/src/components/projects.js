@@ -1,7 +1,16 @@
-
+import { Button } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 import axios from 'axios';
 
 export function projects(){
+    
+    function search(){
+      axios.get(`http://0.0.0.0/projects`)
+      .then(res => {
+        const projects = res.data;
+        this.setState({ projects });
+      })
+    }
 
     return(
         <div>
@@ -42,7 +51,7 @@ export function projects(){
                     </div>
                   </div>
                   <div className="metadata-btn-group">
-                    <button className="button" onClick={search()}>Поиск</button>
+                    <Button variant='success' as={Link} to={`/searchPage`} onClick={search()}>Поиск</Button>
                       <ul>
                         { this.state.projects.map(projects => <li>{projects.name}</li>)}
                       </ul>
