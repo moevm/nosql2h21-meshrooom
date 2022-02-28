@@ -163,6 +163,63 @@ def search_metadata():
     return response
 
 
+@application.route('/export', methods=['GET'])
+def exportDump():
+    projects = db.projects.find()
+    metadatas = db.metadata.find()
+
+    data = {
+        'metadata': [],
+        'projects': [],
+    }
+
+    for metadata in metadatas:
+        metadata['_id'] = str(metadata['_id'])
+        kv = {}
+        for k, v in metadata.items():
+            kv[k] = v
+
+        data['metadata'].append(kv)
+
+    for project in projects:
+        project['_id'] = str(project['_id'])
+        project['metadata_id'] = str(project['metadata_id'])
+
+        data['projects'].append(project)
+
+    response = jsonify(data=data)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
+
+
+@application.route('/import', methods=['POST'])
+def importDump():
+    dump = request.get_json()['dump']
+    dump = json.loads(dump)
+
+    metadatas = dump['metadata']
+    projects = dump['projects']
+
+    db.metadata.drop()
+    db.projects.drop()
+
+    for metadata in metadatas:
+        metadata['_id'] = ObjectId(metadata['_id'])
+
+    for project in projects:
+        project['_id'] = ObjectId(project['_id'])
+        project['metadata_id'] = ObjectId(project['metadata_id'])
+
+    db.metadata.insert_many(metadatas)
+    db.projects.insert_many(projects)
+
+    response = jsonify(status=True)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+
+    return response
+
+
 def create_response_collection(projects):
     data = []
     for project in projects:

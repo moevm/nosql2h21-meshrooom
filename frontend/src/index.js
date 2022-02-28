@@ -10,6 +10,7 @@ import {SearchPage} from "./components/searchPage";
 import {CreatePage} from "./components/createPage";
 import {ProjectPage} from "./components/projectPage"
 import {EditPage} from "./components/editPage"
+import {AdminPage} from "./components/adminPage";
 
 const GlobalStyles = createGlobalStyle`
 .card-header {
@@ -60,9 +61,7 @@ ReactDOM.render(
                                     <Link className="navigation-links-text" to={'/'}><span>Meshroom</span></Link>
                                     <Link className="navigation-links-text1" to={'/'}><span>Проекты</span></Link>
                                     <Link className="navigation-links-text2" to={'/projects/create'}><span>Создать проект</span></Link>
-                                    <span className="navigation-links-text3">
-                                      <span>Администрирование</span>
-                                    </span>
+                                    <Link className="navigation-links-text3" to={'/administration'}><span>Администрирование</span></Link>
                                 </nav>
                             </div>
                         </div>
@@ -76,7 +75,7 @@ ReactDOM.render(
                         <Route exact path={"/projects/create"} name={"createPage"} component={CreatePage}/>
                         <Route exact path={"/projects/:id"} name={"projectPage"} component={ProjectPage}/>
                         <Route exact path={"/projects/:id/edit"} name={"editPage"} component={EditPage}/>
-                        {/*<Route exact path={"/exportPage"} name={"exportPage"} component={exportPage}/>*/}
+                        <Route exact path={"/administration"} name={"adminPage"} component={AdminPage}/>
                         <Route component={NotFound}/>
                     </Switch>
                 </Router>
