@@ -29,9 +29,11 @@ POST /metadata/search - Поиск по метаданным
 
 ```
 docker-compose up -d --force
+cd frontend
+npm start
 ```
 
-После запуска backend будет доступен по адресу http://0.0.0.0
+Проект доступен по адресу http://localhost:3000
 
 
 ### Пример метаданных проекта Meshroom

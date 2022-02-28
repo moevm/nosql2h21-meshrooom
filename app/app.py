@@ -5,13 +5,23 @@ import json
 from bson.objectid import ObjectId
 import random
 
-
 application = Flask(__name__)
 
 application.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE'] + '?authSource=admin'
 
 mongo = PyMongo(application)
 db = mongo.db
+
+@application.before_request
+def hook():
+    if request.method == 'OPTIONS':
+        response = application.make_default_options_response()
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Methods'] = 'POST, GET, OPTIONS, HEAD, DELETE'
+        response.headers['Access-Control-Allow-Headers'] = '*'
+
+        return response
+
 
 
 @application.route('/projects', methods=['GET'])
@@ -69,9 +79,9 @@ def delete_project(id):
 
 @application.route('/projects', methods=['POST'])
 def create_project():
-    name = request.form['name']
-    description = request.form['description']
-    metadata = request.form['metadata']
+    name = request.get_json()['name']
+    description = request.get_json()['description']
+    metadata = request.get_json()['metadata']
 
     projects_col = db['projects']
     metadata_col = db['metadata']
@@ -93,42 +103,36 @@ def create_project():
 
 @application.route('/projects/<id>/edit', methods=['POST'])
 def edit_project(id):
-    name = request.form['name']
-    description = request.form['description']
-    metadata = request.form['metadata']
-
-    projects_col = db['projects']
-    metadata_col = db['metadata']
+    name = request.get_json()['name']
+    description = request.get_json()['description']
+    metadata = request.get_json()['metadata']
 
     project = db.projects.find_one({'_id': ObjectId(id)})
 
-    db.metadata.delete_one({'_id': project['metadata_id']})
-    db.projects.delete_one({'_id': project['_id']})
-
-    x_metadata = metadata_col.insert_one(json.loads(metadata))
-    x_projects = projects_col.insert_one({
-        "name": name,
-        "description": description,
-        "images_count": random.randint(50, 100),
-        "metadata_size": len(metadata),
-        "metadata_id": x_metadata.inserted_id,
+    db.metadata.update_one({'_id': project['metadata_id']}, {'$set': json.loads(metadata)})
+    db.projects.update_one({'_id': project['_id']}, {
+        '$set': {
+            "name": name,
+            "description": description,
+            "metadata_size": len(metadata),
+            "metadata_id": project['metadata_id'],
+        }
     })
 
-    response = jsonify(id=str(x_projects.inserted_id))
+    response = jsonify(status=True)
     response.headers.add("Access-Control-Allow-Origin", "*")
 
     return response
 
 
-
 @application.route('/projects/search', methods=['POST'])
 def search_projects():
-    query = request.form['query']
+    query = request.get_json()['query']
 
     projects = db.projects.find({
         '$or': [
-            {'name': {'$regex': '.*' + query + '.*'}},
-            {'description': {'$regex': '.*' + query + '.*'}},
+            {'name': {'$regex': '.*' + query + '.*', '$options': 'i'}},
+            {'description': {'$regex': '.*' + query + '.*', '$options': 'i'}},
         ],
     })
 
@@ -142,7 +146,7 @@ def search_projects():
 
 @application.route('/metadata/search', methods=['POST'])
 def search_metadata():
-    query = request.form['query']
+    query = request.get_json()['query']
 
     metadatas = db.metadata.find()
 

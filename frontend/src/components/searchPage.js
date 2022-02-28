@@ -1,175 +1,104 @@
-import { Button } from 'react-bootstrap'
-import { Link } from 'react-router-dom'
 import axios from 'axios';
+import '../css/style.css';
+import '../css/search.css';
+import * as React from "react";
 
-export function searchPage(){
-    const project = {
-        name: this.state.name,
-        description: this.state.description
-      };
 
-    function searchOne(context){
-      axios.get(`http://0.0.0.0/projects/${context}`)
-      .then(res => {
-        this.setState({ project });
-      })
-    }
+export function SearchPage() {
+    React.useEffect(() => {
+        searchProjects('')
+        searchMetas('')
+    },[]);
 
-    function searchProject(){
-        const project = {
-            name: this.state.name
-          };
-      
-        axios.post(`http://0.0.0.0/projects/search/`, {project})
+    const [projects, setProjects] = React.useState([]);
+    const [metas, setMetas] = React.useState([]);
+
+    function searchProjects(query) {
+        axios.post(`http://0.0.0.0/projects/search`, {query: query})
         .then(res => {
-            project = res.data;
-        })
-      }
-
-    function searchMeta(){
-        const metadata = {
-            meta: this.state.meta
-          };
-      
-        axios.post(`http://0.0.0.0/metadata/search/`, {metadata})
-        .then(res => {
-            metadata = res.data;
-        })
-      }
-
-    function deleteProject(context){
-        axios.delete(`http://0.0.0.0/projects/${context}`)
-        .then(res => {
-            console.log(res.data);
+            const projects = res.data.data;
+            setProjects(projects);
         })
     }
 
-    function editProject(context){
-        const project = {
-            name: this.state.name
-          };
-
-        axios.post(`http://0.0.0.0/projects/${context}/edit`, project)
-        .then(res => {
-            console.log(res.data);
-        })
+    function searchMetas(query) {
+        axios.post(`http://0.0.0.0/metadata/search`, {query: query})
+            .then(res => {
+                const metas = res.data.data;
+                setMetas(metas);
+            })
     }
+
 
     return(
-        <html lang="en">
-        <head>
-            <title>search - MeshRoom</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <meta charset="utf-8" />
-        
-            <link
-            rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap"
-            />
-            <link rel="stylesheet" href="./style.css" />
-        </head>
-        <body>
-            <div>
-            <link href="./search.css" rel="stylesheet" />
-
-            <div class="search-container">
-                <header data-role="Header" class="search-header">
-                <div class="search-container1">
-                    <div class="search-nav">
-                    <nav
-                        class="navigation-links-nav navigation-links-root-class-name13"
-                    >
-                        <span class="navigation-links-text"><span>Meshroom</span></span>
-                        <span class="navigation-links-text1"><span>Проекты</span></span>
-                        <span class="navigation-links-text2">
-                        <span>Создать проект</span>
-                        </span>
-                        <span class="navigation-links-text3">
-                        <span>Администрирование</span>
-                        </span>
-                    </nav>
-                    </div>
-                </div>
-                <div class="search-btn-group">
-                    <button class="button" onClick={searchOne()}>Найти проект</button>
-                    <Button variant='success' as={Link} to={`/searchPage`}>Поиск</Button>
-                    <ul>
-                        { this.state.project.map(project => <li>{project.name}</li>)}
-                        { this.state.project.map(project => <li>{project.description}</li>)}
-                    </ul>
-                </div>
-                </header>
-                <div class="search-container2">
-                <h1>
-                    <span>Найти проект</span>
-                    <input type="text" placeholder="Название проекта" class="input" name="name"/>
-                        <button class="button" onClick={searchProject()}>Найти проект</button>
-                    <br />
-                    <span></span>
-                </h1>
-                <div class="search-container3">
-                    <input type="text" placeholder="Название проекта" class="input" />
-                    <span>
-                    <span>Найдено - 1</span>
-                    <br />
-                    <span></span>
-                    </span>
-                </div>
-                <div class="search-container4">
-                    <span>Название</span>
-                    <span>Описание</span>
-                    <span>
-                    <span>Количество изображений</span>
-                    <br />
-                    <span></span>
-                    </span>
-                    <span>
-                    <span>Размер мета-данных</span>
-                    <br />
-                    <span></span>
-                    </span>
-                </div>
-                <div class="search-container5">
-                    <span>Проект</span>
-                    <span>
-                    <span>длинное оп...</span>
-                    <br />
-                    <span></span>
-                    </span>
-                    <span><span>56</span></span>
-                    <span>0.3MB</span>
-                    <button className="editButton" onClick={editProject()}>Редактировать</button>
-                    <button className="deleteButton" onClick={deleteProject()}>Удалить</button>
-                    <span>Скачать</span>
-                </div>
-                <h1 class="search-text24">
-                <input type="text" placeholder="Название проекта" class="input" name="meta"/>
-                        <button class="button" onClick={searchMeta()}>Найти проект</button>
-                    <br />
-                    <span></span>
-                </h1>
-                <div class="search-container6">
-                    <input type="text" placeholder="Метаданные" class="input" />
-                    <span>
-                    <span>Найдено - 1</span>
-                    <br />
-                    <span></span>
-                    </span>
-                </div>
-                <div class="search-container7">
-                    <span>Поле</span>
-                    <span>Содержание</span>
-                </div>
-                <div class="search-container8">
-                    <span>key</span>
-                    <span>Value</span>
-                </div>
-                </div>
+        <div className="search-container2">
+            <h1>
+                <span>Поиск по проектам</span>
+                <br/>
+                <span></span>
+            </h1>
+            <div className="search-container3">
+                <input type="text" placeholder="Название проекта" className="input" onChange={evt => searchProjects(evt.target.value)}/>
+                <span>
+                  <span>Найдено - {projects.length}</span>
+                  <br/>
+                  <span></span>
+                </span>
             </div>
-            </div>
-        </body>
-        </html>
 
-        
+            <table>
+                <thead>
+                <tr>
+                    <th>Название</th>
+                    <th>Описание</th>
+                    <th>Количество изображений</th>
+                    <th>Размер мета-данных</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                    {projects?.map(project => (
+                        <tr>
+                            <td>{project.name}</td>
+                            <td>{project.description}</td>
+                            <td>{project.images_count}</td>
+                            <td>{project.metadata_size}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+
+            <h1 className="search-text24">
+                <span>Поиск по метаданным</span>
+                <br/>
+                <span></span>
+            </h1>
+            <div className="search-container6">
+                <input type="text" placeholder="Метаданные" className="input" onChange={evt => searchMetas(evt.target.value)}/>
+                <span>
+                  <span>Найдено - {metas.length}</span>
+                  <br/>
+                  <span></span>
+                </span>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Поле</th>
+                    <th>Содержание</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {metas?.map(meta => (
+                        <tr>
+                            <td>{Object.keys(meta)[0]}</td>
+                            <td>{Object.values(meta)[0]}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
     );
 }
